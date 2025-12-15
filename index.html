@@ -201,8 +201,12 @@
 
       const record = { team, type, classification, serial, by, body, deadline, created: Date.now() };
       if (expiryHours > 0) record.expires = Date.now() + expiryHours * 3600 * 1000;
+
+
       localStorage.setItem(`directive-${serial}`, JSON.stringify(record));
 
       doc.save(`${serial}.pdf`);
-  </script></body>
-  </html>
+    }
+  </script>
+</body>
+</html>
