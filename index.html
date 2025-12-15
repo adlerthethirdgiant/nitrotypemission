@@ -2,108 +2,209 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NitroType Team Mission Generator</title>
+  <title>NitroType – Official Team Directive Generator</title>
   <style>
     body {
       font-family: "Times New Roman", serif;
-      background: #f4f6f8;
+      background: #e9ecf1;
       margin: 0;
       padding: 40px;
     }
     .container {
-      max-width: 900px;
+      max-width: 950px;
       margin: auto;
-      background: #fff;
-      padding: 30px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      background: #ffffff;
+      padding: 40px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
       border-radius: 6px;
     }
     h1 {
       text-align: center;
-      letter-spacing: 2px;
+      letter-spacing: 3px;
+      margin-bottom: 10px;
+    }
+    h2 {
+      text-align: center;
+      font-weight: normal;
+      margin-top: 0;
+      color: #444;
     }
     label {
       display: block;
       margin-top: 15px;
       font-weight: bold;
     }
-    input, textarea {
+    input, textarea, select {
       width: 100%;
       padding: 10px;
       margin-top: 5px;
-      font-size: 16px;
+      font-size: 15px;
     }
     textarea { min-height: 120px; }
     button {
-      margin-top: 25px;
-      padding: 12px 20px;
+      margin-top: 30px;
+      padding: 14px 24px;
       font-size: 16px;
       cursor: pointer;
     }
     .hint {
       font-size: 13px;
       color: #555;
+      margin-top: 6px;
+    }
+    .divider {
+      margin: 30px 0;
+      border-bottom: 1px solid #ccc;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>OFFICIAL TEAM MISSION</h1><label>Team Name</label>
+    <h1>OFFICIAL TEAM DIRECTIVE</h1>
+    <h2>NitroType Operations Division</h2><label>Team Name</label>
 <input id="teamName" placeholder="e.g. Nitro Vanguard" />
 
+<label>Team Logo (appears on PDF header)</label>
+<input type="file" id="logoUpload" accept="image/*" />
+<p class="hint">Upload your team logo here. This replaces the default seal.</p>
+
+<label>Directive Type</label>
+<select id="directiveType">
+  <option>Weekly Race Order</option>
+  <option>Special Event Directive</option>
+  <option>Emergency Mobilization</option>
+  <option>Performance Audit</option>
+  <option>Elite Challenge</option>
+</select>
+
+<label>Classification Level</label>
+<select id="classification">
+  <option value="UNCLASSIFIED">UNCLASSIFIED</option>
+  <option value="RESTRICTED">RESTRICTED</option>
+  <option value="CONFIDENTIAL">CONFIDENTIAL</option>
+  <option value="SECRET">SECRET</option>
+  <option value="TOP SECRET">TOP SECRET</option>
+  <option value="EYES ONLY">EYES ONLY</option>
+</select>
+<p class="hint">Classification appears on header/footer and controls security options.</p>
+
+<label>Directive Serial Number</label>
+<input id="serial" placeholder="e.g. NT-OPS-042" />
+
+<label>Access Passphrase (confidential)</label>
+<input id="passphrase" type="password" placeholder="Required for SECRET / TOP SECRET" />
+<p class="hint">Used to encrypt the PDF. Share securely.</p>
+
 <label>Issued By (Captain)</label>
-<input id="issuedBy" placeholder="Your NitroType username" />
+<input id="issuedBy" placeholder="Captain username" />
 
-<label>Mission Title</label>
-<input id="missionTitle" placeholder="e.g. Weekly Race Objective" />
-
-<label>Mission Details</label>
-<textarea id="missionBody" placeholder="Describe objectives, race targets, rules, deadlines..."></textarea>
+<label>Mission / Orders</label>
+<textarea id="missionBody" placeholder="Define objectives, race quotas, rules, penalties, bonuses..."></textarea>
 
 <label>Deadline</label>
 <input id="deadline" placeholder="e.g. July 20, 2025" />
 
-<button onclick="generatePDF()">Generate Official PDF</button>
-<p class="hint">This will generate a downloadable PDF styled like an official notice.</p>
+<label>Captain Signature (image)</label>
+<input type="file" id="signatureUpload" accept="image/*" />
+<p class="hint">Optional. Upload a handwritten signature image.</p>
+
+<div class="divider"></div>
+
+<label>Auto‑Expire Directive</label>
+<select id="expiry">
+  <option value="0">No expiration</option>
+  <option value="24">24 hours</option>
+  <option value="72">72 hours</option>
+  <option value="168">7 days</option>
+</select>
+<p class="hint">Expired directives are removed from the local archive.</p>
+
+<button onclick="generatePDF()">Generate Classified PDF</button>
+<p class="hint">PDF includes watermark, serial number, seal, and archive footer.</p>
 
   </div>  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>  <script>
-    function generatePDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
+    function readImage(input) {
+      return new Promise((resolve) => {
+        if (!input || !input.files || !input.files[0]) return resolve(null);
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.readAsDataURL(input.files[0]);
+      });
+    }
 
-      const team = document.getElementById('teamName').value;
-      const by = document.getElementById('issuedBy').value;
-      const title = document.getElementById('missionTitle').value;
+    async function generatePDF() {
+      const { jsPDF } = window.jspdf;
+
+      const team = document.getElementById('teamName').value || 'OFFICIAL TEAM';
+      const type = document.getElementById('directiveType').value;
+      const classification = document.getElementById('classification').value;
+      const serial = document.getElementById('serial').value || 'UNREGISTERED';
+      const by = document.getElementById('issuedBy').value || 'COMMAND';
       const body = document.getElementById('missionBody').value;
       const deadline = document.getElementById('deadline').value;
+      const passphrase = document.getElementById('passphrase').value;
+      const expiryHours = parseInt(document.getElementById('expiry').value, 10);
+
+      if ((classification === 'SECRET' || classification === 'TOP SECRET' || classification === 'EYES ONLY') && !passphrase) {
+        alert('A passphrase is required for this classification level.');
+        return;
+      }
+
+      const logo = await readImage(document.getElementById('logoUpload'));
+      const signature = await readImage(document.getElementById('signatureUpload'));
+
+      const doc = new jsPDF({ encryption: passphrase ? {
+        userPassword: passphrase,
+        ownerPassword: passphrase,
+        userPermissions: ['print']
+      } : undefined });
 
       // Watermark
-      doc.setTextColor(220);
-      doc.setFontSize(60);
-      doc.text(team || 'OFFICIAL', 35, 160, { angle: 45 });
+      doc.setTextColor(215);
+      doc.setFontSize(55);
+      doc.text(team, 30, 170, { angle: 45 });
 
       doc.setTextColor(0);
+
+      if (logo) {
+        doc.addImage(logo, 'PNG', 85, 10, 40, 40);
+      }
+
+      // Classification banner
+      doc.setFontSize(12);
+      doc.text(`CLASSIFICATION: ${classification}`, 105, 58, { align: 'center' });
+
       doc.setFontSize(14);
-      doc.text(team.toUpperCase(), 105, 20, { align: 'center' });
+      doc.text(team.toUpperCase(), 105, 70, { align: 'center' });
 
       doc.setFontSize(16);
-      doc.text('OFFICIAL TEAM DIRECTIVE', 105, 35, { align: 'center' });
-
-      doc.setFontSize(12);
-      doc.text(`Mission Title: ${title}`, 20, 55);
-      doc.text(`Issued By: ${by}`, 20, 65);
-      doc.text(`Deadline: ${deadline}`, 20, 75);
-
-      doc.line(20, 80, 190, 80);
-
-      doc.text('Mission Brief:', 20, 95);
-      doc.setFont('Times', 'normal');
-      doc.text(body, 20, 105, { maxWidth: 170 });
+      doc.text(type.toUpperCase(), 105, 80, { align: 'center' });
 
       doc.setFontSize(11);
-      doc.text('This document is automatically generated and considered official within the team.', 105, 270, { align: 'center' });
+      doc.text(`Serial: ${serial}`, 20, 95);
+      doc.text(`Issued By: ${by}`, 20, 103);
+      doc.text(`Deadline: ${deadline}`, 20, 111);
 
-      doc.save(`${team || 'team'}_mission.pdf`);
+      doc.line(20, 116, 190, 116);
+
+      doc.setFontSize(12);
+      doc.text('ORDERS:', 20, 132);
+      doc.text(body, 20, 142, { maxWidth: 170 });
+
+      if (signature) {
+        doc.addImage(signature, 'PNG', 20, 220, 50, 20);
+        doc.text(by, 20, 245);
+      }
+
+      doc.setFontSize(10);
+      doc.text(`HANDLE VIA ${classification} CHANNELS ONLY`, 105, 270, { align: 'center' });
+
+      const record = { team, type, classification, serial, by, body, deadline, created: Date.now() };
+      if (expiryHours > 0) record.expires = Date.now() + expiryHours * 3600 * 1000;
+      localStorage.setItem(`directive-${serial}`, JSON.stringify(record));
+
+      doc.save(`${serial}.pdf`);
+    }(`${serial}.pdf`);
     }
   </script></body>
-</html>
+  </html>
