@@ -1,0 +1,109 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NitroType Team Mission Generator</title>
+  <style>
+    body {
+      font-family: "Times New Roman", serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 40px;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      border-radius: 6px;
+    }
+    h1 {
+      text-align: center;
+      letter-spacing: 2px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      font-size: 16px;
+    }
+    textarea { min-height: 120px; }
+    button {
+      margin-top: 25px;
+      padding: 12px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .hint {
+      font-size: 13px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>OFFICIAL TEAM MISSION</h1><label>Team Name</label>
+<input id="teamName" placeholder="e.g. Nitro Vanguard" />
+
+<label>Issued By (Captain)</label>
+<input id="issuedBy" placeholder="Your NitroType username" />
+
+<label>Mission Title</label>
+<input id="missionTitle" placeholder="e.g. Weekly Race Objective" />
+
+<label>Mission Details</label>
+<textarea id="missionBody" placeholder="Describe objectives, race targets, rules, deadlines..."></textarea>
+
+<label>Deadline</label>
+<input id="deadline" placeholder="e.g. July 20, 2025" />
+
+<button onclick="generatePDF()">Generate Official PDF</button>
+<p class="hint">This will generate a downloadable PDF styled like an official notice.</p>
+
+  </div>  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>  <script>
+    function generatePDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      const team = document.getElementById('teamName').value;
+      const by = document.getElementById('issuedBy').value;
+      const title = document.getElementById('missionTitle').value;
+      const body = document.getElementById('missionBody').value;
+      const deadline = document.getElementById('deadline').value;
+
+      // Watermark
+      doc.setTextColor(220);
+      doc.setFontSize(60);
+      doc.text(team || 'OFFICIAL', 35, 160, { angle: 45 });
+
+      doc.setTextColor(0);
+      doc.setFontSize(14);
+      doc.text(team.toUpperCase(), 105, 20, { align: 'center' });
+
+      doc.setFontSize(16);
+      doc.text('OFFICIAL TEAM DIRECTIVE', 105, 35, { align: 'center' });
+
+      doc.setFontSize(12);
+      doc.text(`Mission Title: ${title}`, 20, 55);
+      doc.text(`Issued By: ${by}`, 20, 65);
+      doc.text(`Deadline: ${deadline}`, 20, 75);
+
+      doc.line(20, 80, 190, 80);
+
+      doc.text('Mission Brief:', 20, 95);
+      doc.setFont('Times', 'normal');
+      doc.text(body, 20, 105, { maxWidth: 170 });
+
+      doc.setFontSize(11);
+      doc.text('This document is automatically generated and considered official within the team.', 105, 270, { align: 'center' });
+
+      doc.save(`${team || 'team'}_mission.pdf`);
+    }
+  </script></body>
+</html>
