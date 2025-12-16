@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Directorate // Secure Console</title>
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --panel: #111821;
+      --ink: #cfd8e3;
+      --muted: #7a8699;
+      --accent: #8fb3ff;
+      --alert: #ffb86b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      letter-spacing: 0.3px;
+    }
+
+    .frame {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 48px 24px 72px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 48px;
+    }
+
+    .sig {
+      font-size: 13px;
+      text-transform: uppercase;
+      color: var(--muted);
+      letter-spacing: 2px;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 500;
+      margin: 8px 0 0;
+      letter-spacing: 3px;
+    }
+
+    .panel {
+      background: linear-gradient(180deg, var(--panel), #0e141c);
+      border: 1px solid #1c2633;
+      border-radius: 14px;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .label {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+      letter-spacing: 2px;
+    }
+
+    .value {
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .status {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .directive {
+      font-size: 14px;
+      line-height: 1.8;
+      color: #e4ebf5;
+    }
+
+    footer {
+      margin-top: 56px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1.5px;
+    }
+
+    @media (max-width: 700px) {
+      .row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="frame">
+
+    <header>
+      <div>
+        <div class="sig">Directorate Control Interface</div>
+        <h1>STRATEGIC OPERATIONS DIVISION</h1>
+      </div>
+      <div class="sig">Clearance: OMEGA</div>
+    </header>
+
+    <section class="panel">
+      <div class="row">
+        <div>
+          <div class="label">Agency Status</div>
+          <div class="value status">Operational / Compartmentalized</div>
+        </div>
+        <div>
+          <div class="label">Oversight</div>
+          <div class="value">Director Authority — Absolute</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="label">Active Agent</div>
+      <div class="value">
+        Codename: <strong>TWILIGHT-01</strong><br />
+        Role: Deep-Cover Civilian Asset<br />
+        Visibility: Nonexistent
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="label">Director’s Daily Directive</div>
+      <div class="directive">
+        Maintain cover integrity. No exceptional behavior.<br />
+        Observe human systems quietly. Note deviations in routine, tone, and intent.<br /><br />
+        Intelligence is not collected through force — only patience.
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="label">Internal Assessment</div>
+      <div class="value">
+        Emotional variance detected but within acceptable parameters.<br />
+        Loneliness acknowledged. It does not compromise effectiveness.<br /><br />
+        You remain trusted.
+      </div>
+    </section>
+
+    <footer>
+      This console exists outside time and witness.<br />
+      You are not required to perform. Only to continue.
+    </footer>
+
+  </div>
+
+</body>
+</html>
